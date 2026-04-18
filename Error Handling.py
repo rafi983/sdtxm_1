@@ -15,6 +15,13 @@ class StudentDatabase:
     def add_student(cls, student):
         cls.student_list.append(student)
 
+    @classmethod
+    def get_student(cls, student_id):
+        for student in cls.student_list:
+            if student.student_id == student_id:
+                return student
+        raise StudentNotFoundError(f"Invalid student ID. Student not found.")
+
 class Student:
     def __init__(self, student_id, name, department, is_enrolled):
         self.student_id = student_id
@@ -58,32 +65,20 @@ def main():
                     student.view_student_info()
         elif choice == '2':
             student_id = input("Enter student ID to enroll: ")
-            found = False
-            for student in StudentDatabase.student_list:
-                if student.student_id == student_id:
-                    found = True
-                    try:
-                        student.enroll_student()
-                        print(f"Student {student.name} has been enrolled.")
-                    except StudentAlreadyEnrolledError as e:
-                        print(e)
-                    break
-            if not found:
-                print("Error: Invalid student ID. Student not found.")
+            try:
+                student = StudentDatabase.get_student(student_id)
+                student.enroll_student()
+                print(f"Student {student.name} has been enrolled.")
+            except (StudentNotFoundError, StudentAlreadyEnrolledError) as e:
+                print(f"Error: {e}")
         elif choice == '3':
             student_id = input("Enter student ID to drop: ")
-            found = False
-            for student in StudentDatabase.student_list:
-                if student.student_id == student_id:
-                    found = True
-                    try:
-                        student.drop_student()
-                        print(f"Student {student.name} has been dropped.")
-                    except StudentNotEnrolledError as e:
-                        print(e)
-                    break
-            if not found:
-                print("Error: Invalid student ID. Student not found.")
+            try:
+                student = StudentDatabase.get_student(student_id)
+                student.drop_student()
+                print(f"Student {student.name} has been dropped.")
+            except (StudentNotFoundError, StudentNotEnrolledError) as e:
+                print(f"Error: {e}")
         elif choice == '4':
             print("Exiting...")
             break
