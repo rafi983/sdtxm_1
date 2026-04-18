@@ -77,10 +77,16 @@ class StudentManagementSystem:
         print("Student not found.")
 
 
-def main():
+def main(students=None):
     app = StudentManagementSystem()
+    if students:
+        app.students.extend(students)
     app.run()
 
 
 if __name__ == "__main__":
-    main()
+    # Create some dummy students for testing
+    s1 = Student("1", "Alice")
+    s2 = Student("2", "Bob")
+    s2.is_enrolled = True
+    main([s1, s2])
